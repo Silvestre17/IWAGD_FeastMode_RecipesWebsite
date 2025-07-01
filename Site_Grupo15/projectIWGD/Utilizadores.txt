@@ -1,0 +1,23 @@
+-------------- Superusers
+- username = admin
+- password = admin
+
+-------------- Users
+
+- username = andre1234
+- password = 1234andre
+
+- username = margarida1234
+- password = 1234margarida
+
+- username = umeima1234
+- password = 1234umeima
+
+- username = rui
+- password = ruirui
+
+- username = quim
+- password = quimquim
+
+- username = joana_isabel
+- password = veirinha68

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Título do Separador -->
+    <title>Regista-te</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'recipe/img/Logo_Icon.png' %}">
+
+    <!-- Ficheiro CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'recipe/style.css' %}" />
+
+    <!-- Biblioteca de Icons-->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+</head>
+<body>
+
+    <!-- Mensagens de Erro/Aviso/Sucesso -->
+    {% if messages %}
+        {% for message in messages %}
+            <dialog open class="dialog dialog-{{message.tags}}">
+                <div class="dialog-content {{ message.tags }}">
+                    <h2 class="dialog-text {{ message.tags }}" style="text-transform: capitalize;">{{ message.tags }}</h2>
+                    <p class="dialog-text">{{ message }}</p>
+                </div>
+                <button class="dialog-close"></button>
+            </dialog>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Página de Resgisto -->
+    <section class="section-register">
+        <div class="form-box-register">
+            <div class="form-value">
+                <h2 class="h2-register">Criar Conta</h2>
+
+                <!-- Formulário do Registo -->
+                <form action="{% url 'recipe:adicionar_registo' %}" enctype="multipart/form-data" method="post">
+                    {% csrf_token %}
+                    <div class="inputbox-register">
+                        <ion-icon name="person-add-outline"></ion-icon>
+                        <input type="text" name="name" required spellcheck="true"
+                               oninvalid="this.setCustomValidity('Nome Obrigatório.')" oninput="setCustomValidity('')">
+                        <label>Nome <span style="font-size: 10px">(Primeiro e Último)</span></label>
+                    </div>
+                    <div class="inputbox-register">
+                        <ion-icon name="person-circle-outline"></ion-icon>
+                        <input type="text" name="username" required
+                               oninvalid="this.setCustomValidity('Username Obrigatório.')" oninput="setCustomValidity('')">
+                        <label>Username</label>
+                    </div>
+                    <div class="inputbox-register">
+                        <ion-icon name="mail-outline"></ion-icon>
+                        <input type="text" name="email" required
+                               oninvalid="this.setCustomValidity('E-mail Obrigatório.')" oninput="setCustomValidity('')">
+                        <label>E-mail</label>
+                    </div>
+                    <div class="inputbox-register">
+                        <ion-icon name="eye" style="margin-right: 30px; cursor:pointer;" id="eye-icon"></ion-icon>
+                        <ion-icon name="lock-closed-outline"></ion-icon>
+                        <input type="password" name="password" required id="password"
+                               oninvalid="this.setCustomValidity('Password Obrigatória.')" oninput="setCustomValidity('')">
+                        <label>Password</label>
+                    </div>
+                    <br>
+
+                    <script>
+                        // JS | Mostrar a Password
+                        // Fonte: https://www.w3schools.com/howto/howto_js_toggle_password.asp
+                        let eyeicon = document.getElementById("eye-icon")
+                        let password = document.getElementById("password")
+
+                        eyeicon.onclick = function (){
+                            if(password.type == 'password'){
+                                password.type = "text"
+                                eyeicon.name = "eye-off"
+                            } else{
+                                password.type = "password"
+                                eyeicon.name = "eye"
+                            }
+                        }
+                    </script>
+
+                    <div>
+                        <h5 style="color:white; margin-top: -10px">Imagem de Perfil:
+                            <span style="font-size: 8px; margin-left: 2px; color: rgba(255,255,255,0.25)"> (Opcional)</span>
+                        </h5>
+                        <label class="register-file-upload">
+                            <input type="file" name="profile-photo" accept="image/*"/> Upload
+                            <ion-icon name="image"></ion-icon>
+                        </label>
+                    </div>
+
+                    <div class="termos-register">
+                        <label>
+                            <!-- Mensagem Personalizada | Fonte: https://stackoverflow.com/questions/38852823/how-to-change-checkbox-required-message -->
+                            <input type="checkbox" name="termos-condições" required
+                                   oninvalid="this.setCustomValidity('Por favor, aceite os Termos e Condições!')" oninput="setCustomValidity('')"/>
+                            Li e aceito os <a href="{% static 'recipe/TermosCondicoes_FeastMode.pdf' %}"><b>Termos e Condições</b></a>
+                        </label>
+                    </div>
+
+                    <button class="login-btn yellow">Registar</button>
+                </form>
+                <div class="register">
+                    <p style="color: #9d9d9d">Já tem conta? <a href="{% url 'recipe:login_page' %}">Inicie Sessão</a></p>
+                </div>
+                <div class="register">
+                    <a href="{% url 'recipe:home' %}" style="color: white"><ion-icon name="home-outline"></ion-icon> Home</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bootstrap js -->
+    <script src="{% static "recipe/js/bootstrap.min.js" %}"></script>
+    <!-- Popper js -->
+    <script src="{% static "recipe/js/popper.min.js" %}"></script>
+    <!-- Jquery js -->
+    <script src="{% static "recipe/js/code.jquery.com_jquery-3.7.1.min.js" %}"></script>
+
+    <!-- JS | Mensagens-->
+    <script>
+        // Fecha a caixa de diálogo quando se carrega nela
+        $('.dialog').click(function() {
+            $(this).fadeOut();
+        });
+
+        // Fecha a caixa de diálogo passado 8 segundos
+        setTimeout(function() {
+            $('.dialog').fadeOut();
+        }, 8000);
+
+        // Fecha a caixa de diálogo quando o botão de fechar é clicado
+        $('.dialog-close').click(function() {
+            $('.dialog').fadeOut();
+        });
+    </script>
+
+</body>
+</html>

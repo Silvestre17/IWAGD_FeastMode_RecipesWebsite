@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+{% extends "recipe/base.html" %}
+{% block blocotopo %}
+
+{% load static %}
+
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Título do Separador -->
+    <title>Contactos</title>
+
+    <!-- AOS Library CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- AOS Library JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init();</script>
+
+</head>
+<body>
+
+    <!-- Preloader | Para carregar toda a página -->
+    <div id="preloader">
+        <div class="feast-mode-load"></div>
+    </div>
+
+    <script>
+        // JS | Desligar o '.preloader' quando a página estiver carregada
+        const $window = $(window);
+
+        $window.on('load', function () {
+            $('#preloader').fadeOut('slow', function () {
+                $(this).remove();
+            });
+        });
+    </script>
+
+    <!-- Topo da Página -->
+    <br><br>
+    <div class="breadcumb-area" style="background-image: url({% static "recipe/img/hero_banner.jpg" %});">
+        <div class="container h-100">
+            <div class="row h-100 align-items-center">
+                <div class="col-12">
+                    <div class="bradcumb-title text-center">
+                        <h2>Contactos</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="breadcumb-nav">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url "recipe:home" %}"><i class="fa fa-home" aria-hidden="true"></i>Home</a></li>
+                            <li><i class="fa fa-angle-right breadcrumb-item active" style="margin-left: 7px;margin-right: 7px;"></i></li>
+                            <li class="breadcrumb-item active" aria-current="page">Contactos</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Contactos - Sobre Nós -->
+    <section class="about_section layout_padding">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 px-0" data-aos="fade-right" data-aos-duration="800">
+                    <div class="img_container">
+                        <div class="img-box">
+                            <img src="{% static 'recipe/img/contactos/sobre-nos.png' %}" alt=""/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 px-0" data-aos="fade-left" data-aos-duration="800">
+                    <div class="detail-box">
+                        <div class="heading_container" style="margin-left: 15px">
+                            <h2 style="font-family: 'Poppins', sans-serif; font-weight: bold">
+                                Sobre Nós
+                            </h2>
+                        </div>
+                        <p style="margin-left: 15px">
+                            Face à diversidade gastronómica, o <span style="color: #FD8B00">Feast Mode</span> pretende criar uma plataforma de partilha de receitas,
+                            que transcende barreiras geracionais e acomoda as mais diversas necessidades,
+                            proporcionando, assim, um universo culinário acessível a todos.
+                        </p>
+                        <p style="margin-left: 15px">
+                            Através de uma interface simples e agradável, enriquecida por filtros e várias
+                            funcionalidades fáceis de utilizar, proporcionamos uma experiência de navegação
+                            descomplicada e intuitiva, tornando a exploração e criação de receitas
+                            acessíveis para todos os utilizadores, independentemente da sua experiência na cozinha.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contactos - Equipa | Fonte: https://snippets.wrappixel.com/bootstrap-our-team-section/ -->
+    <div class="py-5 team">
+        <div class="container">
+            <div class="row justify-content-center" style="margin-bottom: -40px">
+                <div class="col-md-7 text-center">
+                    <h1 class="mb-1 title-contactos" data-aos="fade-right" data-aos-duration="800">Equipa</h1>
+                    <p class="subtitle-title" data-aos="fade-left" data-aos-duration="800">Feast Mode</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="py-5 team bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4" data-aos="fade-left" data-aos-duration="800">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <img src="{% static 'recipe/img/contactos/Andre_Silvestre.jpg' %}"
+                                 alt="wrapkit" class="img-fluid"/>
+                        </div>
+                        <div class="col-md-12" style="margin-left: 5px; padding-right: 25px">
+                            <div class="pt-2">
+                                <h5 class="mt-4 font-weight-medium mb-0">André Silvestre</h5>
+                                <h6 class="subtitle-names">Estudante</h6>
+                                <p style="text-align: justify;">
+                                    Na ciência de dados, transformamos números em insights - e às vezes,
+                                    até mesmo receitas secretas de bolo em fórmulas matemáticas deliciosamente engraçadas!
+                                </p>
+                                <ul class="list-inline">
+                                    <li class="list-inline-item"><a href="https://www.linkedin.com/in/andrefgsilvestre/" class="text-decoration-none d-block px-1"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4" data-aos="zoom-in" data-aos-duration="800">
+                    <div class="row">
+                        <div class="col-md-12 pro-pic">
+                            <img src="{% static 'recipe/img/contactos/Margarida_Pereira.jpg' %}"
+                                 alt="wrapkit" class="img-fluid"/>
+                        </div>
+                        <div class="col-md-12" style="margin-left: 5px; padding-right: 25px">
+                            <div class="pt-2">
+                                <h5 class="mt-4 font-weight-medium mb-0">Margarida Pereira</h5>
+                                <h6 class="subtitle-names">Estudante</h6>
+                                <p style="text-align: justify;">
+                                    Na nossa cozinha de análise de dados, transformamos métricas em pratos de alta
+                                    qualidade e descobrimos que a estatística é a melhor receita para o sucesso!
+                                </p>
+                                <ul class="list-inline">
+                                    <li class="list-inline-item"><a href="https://www.linkedin.com/in/maria-margarida-pereira/" class="text-decoration-none d-block px-1"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4" data-aos="fade-right" data-aos-duration="800">
+                    <div class="row">
+                        <div class="col-md-12 pro-pic">
+                            <img src="{% static 'recipe/img/contactos/Umeima_Mahomed.jpg' %}"
+                                 alt="wrapkit" class="img-fluid"/>
+                        </div>
+                        <div class="col-md-12" style="margin-left: 5px; padding-right: 25px">
+                            <div class="pt-2">
+                                <h5 class="mt-4 font-weight-medium mb-0">Umeima Mahomed</h5>
+                                <h6 class="subtitle-names">Estudante</h6>
+                                <p style="text-align: justify;">
+                                    Na nossa missão de construir websites de receitas, adicionamos os ingredientes de dados com mestria,
+                                    criando plataformas tão apetitosas quanto as próprias receitas!
+                                </p>
+                                <ul class="list-inline">
+                                    <li class="list-inline-item"><a href="https://www.linkedin.com/in/umeima-mahomed-4996801b4/" class="text-decoration-none d-block px-1"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contactos - Mapa | Fonte: https://embedmaps.info/ -->
+    <div class="contact-area section_padding_80">
+        <div class="container">
+            <div class="row" data-aos="fade-up" data-aos-duration="800">
+                <div class="col-12">
+                    <div class="mapouter">
+                        <div class="gmap_canvas">
+                            <iframe width="850" height="500" id="gmap_canvas"
+                                    src="https://maps.google.com/maps?q=iscte&t=&z=13&ie=UTF8&iwloc=&output=embed" frameborder="0"
+                                    scrolling="no" marginheight="0" marginwidth="0"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-info-area" data-aos="zoom-in" data-aos-duration="800">
+                <div class="row">
+                    <div class="col-12 col-md-4" style="margin: 0 auto">
+                        <div class="single-contact-info mb-30 text-center wow fadeInUp" data-wow-delay="0.6s">
+                            <h3>Portugal</h3>
+                            <p>Avenida das Forças Armadas, 1649-026 Lisboa <br> Email: info.contact@feast-mode.com <br> Phone: 202 020 202</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endblock %}
+    {% block rodape %}{% endblock %}
+
+
+
+    <!-- Bootstrap js -->
+    <script src="{% static "recipe/js/bootstrap.min.js" %}"></script>
+    <!-- Popper js -->
+    <script src="{% static "recipe/js/popper.min.js" %}"></script>
+    <!-- Jquery js -->
+    <script src="{% static "recipe/js/code.jquery.com_jquery-3.7.1.min.js" %}"></script>
+
+</body>
+</html>

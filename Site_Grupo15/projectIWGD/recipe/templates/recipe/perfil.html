@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+
+{% extends "recipe/base.html" %}
+{% block blocotopo %}
+
+{% load static %}
+
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Título do Separador -->
+    <title>{{ user.first_name }} {{ user.last_name }} | O meu Perfil</title>
+
+    <!-- AOS Library CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- AOS Library JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init();</script>
+
+</head>
+<body>
+
+    <!-- Preloader | Para carregar toda a página -->
+    <div id="preloader">
+        <div class="feast-mode-load"></div>
+    </div>
+
+    <script>
+        // JS | Desligar o '.preloader' quando a página estiver carregada
+        const $window = $(window);
+
+        $window.on('load', function () {
+            $('#preloader').fadeOut('slow', function () {
+                $(this).remove();
+            });
+        });
+    </script>
+
+    <!-- Template do Perfil | Fonte: https://mdbootstrap.com/docs/standard/extended/profiles/ -->
+    <section class="h-100">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col col-lg-12 col-xl-10">
+                    <div class="card">
+
+                        <!-- Topo do Perfil -->
+                        <div class="rounded-top text-white d-flex flex-row"
+                             style="background: rgba(0, 0, 0, 0.8) url({% static "recipe/img/perfil-banner.svg" %}) no-repeat center;
+                                     height:300px; background-size: cover;" >
+                            <div class="ms-4 mt-5 d-flex flex-column" style="width: 20rem;" data-aos="fade-up" data-aos-duration="800">
+                                <img src= "{{ user.perfil.foto.url }}"
+                                     alt="" class="img-thumbnail img-fluid mt-4 mb-2"
+                                     style="z-index: 1; border-radius: 50%; object-fit: cover; aspect-ratio:1/1; margin-left: 2rem">
+
+                                <!-- Botão de Editar | Caso o Perfil seja do User logado -->
+                                {% if request.user == user %}
+                                    <a href="{% url 'recipe:editar_perfil' username=request.user.username %}">
+                                     <button class="btn-profile yellow">EDITAR</button>
+                                    </a>
+                                {% endif %}
+                            </div>
+                            <div class="ms-3" style="margin-top: 190px;">
+                                <h1 style="color: #6f6b6b; margin-bottom: -2px; font-weight: bold" data-aos="fade-up-left" data-aos-duration="800">{{ user.first_name }} {{ user.last_name }}</h1>
+                                <p style="font-size: 17px; color: #a2a2a2" data-aos="fade-up-left" data-aos-duration="800">{{ user.username }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Estatísticas do Utilizador -->
+                        <div class="p-4 text-black" style="background-color: #f8f9fa;">
+                            <div class="d-flex justify-content-end text-center py-1" data-aos="fade-up" data-aos-duration="800">
+                                <div>
+                                    <p class="mb-1 h4">{{ user.perfil.total_comentarios }}</p>
+                                    <p class="small text-muted mb-0">Comentários</p>
+                                </div>
+                                <div class="px-3">
+                                    <p class="mb-1 h4">{{ user.receita_set.count }}</p>
+                                    <p class="small text-muted mb-0">Receitas</p>
+                                </div>
+                                <div>
+                                    <p class="mb-1 h4">{{ user.perfil.total_avaliacoes }}</p>
+                                    <p class="small text-muted mb-0">Avaliações</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Informações do Utilizador -->
+                        <div class="card-body p-4 text-black">
+                            <div class="mb-4" style="margin-top:5rem" data-aos="fade-up" data-aos-duration="800">
+                                {% if user.perfil.descricao_pessoal %}
+                                    <p class="lead fw-bolder mb-1" style="font-size: 30px; color: #6f6b6b">Sobre mim</p>
+                                    <div class="p-4" style="background-color: #f8f9fa;">
+                                        <p class="font-italic mb-1"></p>
+                                            <pre style="font-family: 'Poppins', sans-serif; font-size: 15px; text-align: justify;
+                                                        color: #444444;margin-bottom: 0;white-space: break-spaces;">{{ user.perfil.descricao_pessoal }}</pre>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-up" data-aos-duration="800">
+                                <p class="lead fw-bolder mb-0" style="font-size: 30px; color: #6f6b6b">
+                                    As Minhas Receitas
+                                </p>
+                            </div>
+
+                            <p style="font-size: 20px; color: #6f6b6b; margin-left: 10px;font-weight: 500" data-aos="fade-up" data-aos-duration="800">Melhor Classificadas</p>
+
+                            <!-- Caso o Autor já tenha publicado receitas -->
+                            {% if top_receitas_user %}
+
+                                <!-- Lista com as 5 Receitas Melhor Classificadas -->
+                                <!-- Fonte: https://www.buymeacoffee.com/howtodevv/e/173684 -->
+                                <div class="box">
+                                    {% for receita in top_receitas_user %}
+                                        <a href="{% url 'recipe:detalhe' receita.titulo %}">
+                                        <div class="list">
+                                            <div class="imgBox" data-aos="fade-up" data-aos-duration="600">
+                                                <img src="{{ receita.imagem.url }}" alt="">
+                                            </div>
+                                            <div class="info">
+                                                <h2>
+                                                    <small>#</small>{{ forloop.counter }}
+                                                </h2>
+
+                                                <h4 data-aos="fade-up" data-aos-duration="800">{{ receita.titulo }}</h4>
+                                                <p data-aos="fade-up" data-aos-duration="800">{{ receita.media_avaliacoes }} <i class="fa fa-star" aria-hidden="true"></i></p>
+                                            </div>
+                                        </div>
+                                        </a>
+                                    {% endfor %}
+                                </div>
+
+                            <!-- Caso contrário, indica que não tem receitas publicadas -->
+                            {% else %}
+                                <p> Sem receitas publicadas! </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% endblock %}
+    {% block rodape %}{% endblock %}
+
+
+    <!-- Bootstrap js -->
+    <script src="{% static "recipe/js/bootstrap.min.js" %}"></script>
+    <!-- Popper js -->
+    <script src="{% static "recipe/js/popper.min.js" %}"></script>
+    <!-- Jquery js -->
+    <script src="{% static "recipe/js/code.jquery.com_jquery-3.7.1.min.js" %}"></script>
+
+</body>
+</html>

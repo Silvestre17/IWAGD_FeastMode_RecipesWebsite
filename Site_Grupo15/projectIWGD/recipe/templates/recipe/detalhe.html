@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+
+{% extends "recipe/base.html" %}
+{% block blocotopo %}
+
+{% load static %}
+
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Título do Separador -->
+    <title>{{ receita.titulo }}</title>
+
+    <!-- AOS Library CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- AOS Library JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init();</script>
+
+    <!-- Bootstrap js -->
+    <script src="{% static "recipe/js/bootstrap.min.js" %}"></script>
+    <!-- Popper js -->
+    <script src="{% static "recipe/js/popper.min.js" %}"></script>
+    <!-- Jquery js -->
+    <script src="{% static "recipe/js/code.jquery.com_jquery-3.7.1.min.js" %}"></script>
+
+    <!-- CSSs e JS Extra | Select2 4.0.6 -->
+    <link rel="stylesheet" href="{% static 'recipe/css/select2.min.css' %}">
+
+    <script>
+    /*-------------------------------------
+    Select2 activation code
+    -------------------------------------*/
+    $(document).ready(function () {
+        if ($('select.select2').length) {
+            $('select.select2').select2({
+                theme: 'classic',
+                dropdownAutoWidth: true,
+                width: '100%'
+            });
+            $('.opening-hours-wrap select.select2').select2({
+                theme: 'classic',
+                width: '100%'
+            });
+        }
+    });
+    </script>
+
+    <script src="{% static "recipe/js/select2.full.min.js"%}"></script>
+
+</head>
+<body>
+    <br><br>
+
+    <!-- Preloader | Para carregar toda a página -->
+    <div id="preloader">
+        <div class="feast-mode-load"></div>
+    </div>
+
+    <script>
+        // JS | Desligar o '.preloader' quando a página estiver carregada
+        const $window = $(window);
+
+        $window.on('load', function () {
+            $('#preloader').fadeOut('slow', function () {
+                $(this).remove();
+            });
+        });
+    </script>
+
+    <!-- Banner da Receita -->
+    <div class="nav-control-single-recipe" style="background-image: url({{receita.imagem.url}});"></div>
+
+    <!-- Detalhes da Receita -->
+    <section class="padding-bottom-80">
+    <div class="container">
+        <div class="single-recipe">
+            <div class="breadcumb-nav" style="text-align: center; margin-bottom: 30px">
+                <div class="container">
+
+                    <!-- Botão para Apagar | Aparece apenas se o User for o Autor da Receita ou for Superuser -->
+                    {% if receita.autor.perfil.user == request.user or request.user.is_superuser %}
+                        <li>
+                            <a href="{% url 'recipe:editar_receita' receita.titulo %}" id="edit-recipe" class="btn-edit-recipe">
+                                <i class="fa fa-edit" aria-hidden="true"></i> Editar Receita</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'recipe:remover_receita' receita.id %}" id="delete-recipe" class="btn-delete-recipe">
+                                <i class="fa fa-trash" aria-hidden="true"></i> Apagar Receita</a>
+                        </li>
+                    {% endif %}
+
+                    <script>
+                        // JS | Janela de Confirmação para apagar a Receita.
+                        $("#delete-recipe").click(function() {
+                            return confirm("Quer mesmo apagar esta receita?");
+                        });
+                    </script>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <nav aria-label="breadcrumb" style="display: inline-block;">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="{% url "recipe:home" %}"><i class="fa fa-home" aria-hidden="true"></i>Home</a></li>
+                                    <li><i class="fa fa-angle-right breadcrumb-item active" style="margin-left: 7px;margin-right: 7px;"></i></li>
+                                    <li class="breadcrumb-item active" aria-current="page">{{ receita.titulo }}</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="ctg-name">{{ receita.categoria }}</div>
+            <h2 class="item-title">{{ receita.titulo }}</h2>
+
+            <div class="d-flex align-items-center justify-content-between flex-wrap mb-5 text-center">
+                <ul class="entry-meta">
+                    <li class="single-meta"><i class="fa fa-calendar"></i> {{ receita.pub_data.date }}</li>
+                    <li class="single-meta"><i class="fa fa-user"></i><span style="color: #bebebe">by </span> <span> {{ receita.autor.first_name }} {{ receita.autor.last_name }}</span></li>
+                    <li class="single-meta"><i class="fa fa-tags"></i><span> {{ receita.grau_dificuldade }} </span></li>
+                    <li class="single-meta"> <i class="fa fa-star" aria-hidden="true"></i><span>{{ receita.media_avaliacoes }}<span style="color: #bebebe"> /5</span></span>
+                    </li>
+                    <li class="single-meta"><i class="fa fa-comment"></i><span> {{ receita.numero_de_comentarios }} </span> <span style="color: #bebebe;">Comentários</span></li>
+                </ul>
+            </div>
+
+            <div class="item-feature">
+                <ul>
+                    <li>
+                        <div class="feature-wrap">
+                            <div class="media">
+                                <div class="feature-icon">
+                                    <i class="fa fa-clock-o"></i>
+                                </div>
+                                <div class="media-body space-sm">
+                                    <div class="feature-title">TEMPO DE PREP.</div>
+                                    <div class="feature-sub-title">{{ receita.tempo_prep }} Mins</div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="feature-wrap">
+                            <div class="media">
+                                <div class="feature-icon">
+                                    <i class="fa fa-user-circle"></i>
+                                </div>
+                                <div class="media-body space-sm">
+                                    <div class="feature-title">DOSES</div>
+                                    <div class="feature-sub-title">{{ receita.doses }} Pessoas</div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="feature-wrap">
+                            <div class="media">
+                                <div class="feature-icon">
+                                    <i class="fa fa-calculator"></i>
+                                </div>
+                                <div class="media-body space-sm">
+                                    <div class="feature-title">CALORIAS</div>
+                                    <div class="feature-sub-title">{{ receita.calorias }} Kcal</div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Lista de Ingredientes -->
+            <div class="making-elements-wrap" style="margin-left: 100px;margin-right: 100px;">
+                <div class="row">
+                    <div class="col-xl-12 col-12">
+                        <div class="ingridients-wrap">
+                            <h3 class="item-title"><i class="fa fa-list-ul"></i>Ingredientes</h3>
+                            <div class="adjust-servings">
+                                <div class="servings-title">Ajustar as Doses</div>
+                                <form class="servings-quantity">
+                                    <div class="input-group quantity-holder" id="quantity-holder">
+                                        <input type="text" name='quantity' class="form-control quantity-input"
+                                               value="1" placeholder="1">
+                                        <div class="btn-quantity-select">
+                                            <button class="quantity-plus" type="button">
+                                                <i class="fa fa-plus"></i>
+                                            </button>
+                                            <button class="quantity-minus" type="button">
+                                                <i class="fa fa-minus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            {% for ingrediente in receita.ingrediente_set.all %}
+                                {% if ingrediente.unidade > 0 %}
+
+                                    {% if ingrediente.quantidade == "Unidades" %}
+                                        <div class="checkbox checkbox-primary ingredient">
+                                        <input type="checkbox" id="checkbox{{ forloop.counter }}">
+                                        <label for="checkbox{{ forloop.counter }}">
+                                                <span class="ingredient-value"> {{ ingrediente.unidade }} </span> {{ ingrediente.ingrediente }} {{ ingrediente.extra_opcional }}
+                                        </label>
+                                    </div>
+                                    {% else %}
+                                    <div class="checkbox checkbox-primary ingredient">
+                                        <input type="checkbox" id="checkbox{{ forloop.counter }}">
+                                        <label for="checkbox{{ forloop.counter }}">
+                                            <span class="ingredient-value"> {{ ingrediente.unidade }} </span> {{ ingrediente.quantidade }} {{ ingrediente.ingrediente }} {{ ingrediente.extra_opcional }}
+                                        </label>
+                                    </div>
+                                    {% endif %}
+
+                                {% elif ingrediente.unidade == 0 %}
+                                    <div class="checkbox checkbox-primary ingredient">
+                                        <input type="checkbox" id="checkbox{{ forloop.counter }}">
+                                        <label for="checkbox{{ forloop.counter }}">
+                                            {{ ingrediente.ingrediente }}  {{ ingrediente.extra_opcional }} {{ ingrediente.quantidade }}
+                                        </label>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                // JavaScript | Alterar a quantidade de ingredientes conforme o 'Ajuste de Doses'
+                $('#quantity-holder').on('click', '.quantity-plus', function () {
+                    // Obter o elemento do botão clicado
+                    var $holder = $(this).parents('.quantity-holder');
+
+                    // Encontrar o campo de input de quantidade
+                    var $target = $holder.find('input.quantity-input');
+
+                    // Obter o valor atual da quantidade e converter para inteiro
+                    var $quantity = parseInt($target.val(), 10);
+
+                    // Verificar se $quantity é um número positivo
+                    if ($.isNumeric($quantity) && $quantity > 0) {
+                        // Incrementar a quantidade e atualizar o valor no campo de input
+                        $quantity = $quantity + 1;
+                        $target.val($quantity);
+                    } else {
+                        // Se não for um número positivo, manter o valor atual
+                        $target.val($quantity);
+                    }
+
+
+                    }).on('click', '.quantity-minus', function () {
+
+                        // Repetir o mesmo processo, mas em vez de incrementar, diminui a quantidade
+                        var $holder = $(this).parents('.quantity-holder');
+                        var $target = $holder.find('input.quantity-input');
+                        var $quantity = parseInt($target.val(), 10);
+
+                        if ($.isNumeric($quantity) && $quantity >= 2) {
+                            $quantity = $quantity - 1;
+                            $target.val($quantity);
+                        } else {
+                            $target.val(1);
+                        }
+                });
+
+                // Obter os botões de adição e subtração
+                const plusButton = document.querySelector('.quantity-plus');
+                const minusButton = document.querySelector('.quantity-minus');
+
+                // Obter o campo de input de quantidade
+                const inputField = document.querySelector('.quantity-input');
+
+                // Obter os valores dos ingredientes
+                const ingredientValues = document.querySelectorAll('.ingredient-value');
+
+                // Armazenar os valores iniciais dos ingredientes
+                const initialIngredientValues = Array.from(ingredientValues).map(element => parseFloat(element.textContent.trim()));
+
+                // Adicionar um event listener ao botão de adição
+                plusButton.addEventListener('click', () => {
+                    const newQuantity = parseInt(inputField.value, 10);
+
+                    // Garantir que newQuantity é maior que 1
+                    if (newQuantity > 0) {
+
+                        // Iterar sobre todos os elementos .ingredient-value e atualizar o valor dos ingredientes
+                        ingredientValues.forEach((element, index) => {
+                            const ingredientValue = initialIngredientValues[index];
+                            const newIngredientValue = ingredientValue * (newQuantity + 1);
+                            element.textContent = newIngredientValue
+                        });
+                    }
+                });
+
+                // Adicionar um event listener ao botão de subtração
+                minusButton.addEventListener('click', () => {
+                    const newQuantity = parseInt(inputField.value, 10);
+
+                    // Repetir o mesmo processo do botão de adição
+                    if (newQuantity > 1) {
+                        ingredientValues.forEach((element, index) => {
+                            const ingredientValue = initialIngredientValues[index];
+                            const newIngredientValue = ingredientValue * (newQuantity - 1);
+                            element.textContent = newIngredientValue
+                        });
+                    }
+                });
+            </script>
+
+            <!-- Modo de Preparação -->
+            <div class="line"></div>
+            <div class="making-elements-wrap" style="margin-left: 100px;margin-right: 100px;">
+                <div class="row">
+                    <div class="col-xl-12 col-12">
+                        <div class="ingridients-wrap">
+                            <h3 class="item-title"><i class="fa fa-list-ol"></i> Modo de Preparação</h3>
+                            <pre>{{ receita.modo_prep }} </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tags da Receita -->
+            <div class="line"></div>
+            <div class="tag-share">
+                <ul><li>
+                    <ul class="inner-tag text-right">
+                        <li>Tags:</li>
+                        <li>
+                            {% if receita.categoria == "Vegetariano/Vegan" %}
+                                <a href="{% url 'recipe:mudar_categoria' "Vegetariano" %}">{{ receita.categoria }}</a>
+                            {% else %}
+                                <a href="{% url 'recipe:mudar_categoria' receita.categoria %}">{{ receita.categoria }}</a>
+                            {% endif %}
+                        </li>
+                        <li>,</li>
+                        <li>
+                            <a href="{% url 'recipe:mudar_grau_dificuldade' receita.grau_dificuldade %}">{{ receita.grau_dificuldade }}</a>
+                        </li>
+                    </ul>
+                </li></ul>
+            </div>
+
+            <!-- Autor da Receita -->
+            <div class="recipe-author" >
+                <a href="{% url 'recipe:perfil' receita.autor.username %}">
+                    <div class="media">
+                        <img src="{{ receita.autor.perfil.foto.url }}" alt="{{ receita.autor.first_name }}" class="media-img">
+                        <div class="media-body">
+                            <h5 class="author-sub-title">Escrita por</h5>
+                            <h4 class="author-title">{{ receita.autor.first_name }} {{ receita.autor.last_name }}</h4>
+                            {% if receita.autor.perfil.descricao_pessoal %}
+                                <pre>{{ receita.autor.perfil.descricao_pessoal }}</pre>
+                            {% else %}
+                                <div style="padding: 20px"></div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Reviews da Receita -->
+            <div class="recipe-reviews" id="recipe-reviews">
+                <div class="section-heading-reviews heading-dark">
+                    <h2 class="item-heading">REVIEWS DAS RECEITAS</h2>
+                </div>
+                <div class="avarage-rating-wrap">
+                    <div class="avarage-rating">
+                        <b>Média das Avaliações:</b>
+
+                        <!-- Preencher as Estrelas a Amarelo conforme a Média das Classificações -->
+                        <!-- Fonte: https://stackoverflow.com/questions/61536842/how-to-color-parts-of-character-in-html -->
+                        <span class="rating-icon-wrap rating">
+                            <div class="rating__overlay" style="width: {{receita.calcular_percentagem_media_estrelas}}% !important;">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                            <div class="rating__base">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                        </span>
+                        <span class="rating-number">({{ receita.media_avaliacoes }} | {{ receita.numero_de_classificacoes }} Avaliações)</span>
+                    </div>
+                    <div class="total-reviews">
+                        <b>Total de Comentários:</b>
+                        <span class="review-number">({{ receita.numero_de_comentarios }})</span></div>
+                </div>
+
+                <ul>
+                    <!-- Comentário | Filtros, Paginação e Sem Comentários -->
+                    <div class="container">
+                        <div class="row justify-content-md-center">
+                            <div class="col-lg-12">
+                                <div class="pagination-area d-sm-flex mt-1">
+
+                                    <!-- Form dos Filtros -->
+                                    {% if receita.numero_de_comentarios > 0 %}
+                                    <p>Comentários <b>{{ pagina.start_index }}-{{ pagina.end_index }}</b> de <b>{{ pagina.paginator.count }}</b></p>
+
+                                    <form action="{% url 'recipe:detalhe' receita.titulo %}#recipe-reviews"
+                                          method="get" id="filter-form" style="display: block;direction: ltr;">
+                                        <!-- Filtros Gerais - Recentes | Melhor Classificados -->
+                                        <div class="filter-box" style="max-width: 200px;">
+                                            <select class="select2" name="filtrar" id="filtrar-select">
+                                                <option value="Todos" {% if request.GET.filtrar == 'Todos' %}selected="selected"{% endif %}>Todos</option>
+                                                <option value="MaisRecentes" {% if request.GET.filtrar == 'MaisRecentes' %}selected="selected"{% endif %}>Mais Recentes</option>
+                                                <option value="MenosRecentes" {% if request.GET.filtrar == 'MenosRecentes' %}selected="selected"{% endif %}>Menos Recentes</option>
+                                                <option value="PiorClassificados" {% if request.GET.filtrar == 'PiorClassificados' %}selected="selected"{% endif %}>Pior Classificados</option>
+                                                <option value="MelhorClassificados" {% if request.GET.filtrar == 'MelhorClassificados' %}selected="selected"{% endif %}>Melhor Classificados</option>
+                                            </select>
+                                        </div>
+                                    </form>
+
+                                    <script>
+                                        // JS | Submeter o Form quando selecionamos alguma opção
+                                        $(document).ready(function() {
+                                            // Captura o evento 'change' no select
+                                            $("#filtrar-select").on("change", function() {
+                                                // Submete o formulário quando uma opção for selecionada
+                                                $("#filter-form").submit();
+                                            });
+                                        });
+                                    </script>
+
+                                    {% else %}
+                                        <p class="no-comment"> <i>Esta receita ainda <b>não tem comentários</b>!</i></p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <!-- Para cada comentário mostrar todos os elementos associados -->
+                    {% for comentario in pagina.object_list  %}
+                    <li class="reviews-single-item">
+                        <div class="media media-none--xs">
+                            <a href= "{% url 'recipe:perfil' comentario.user.username %}">
+                                <img src="{{ comentario.user.perfil.foto.url }}" alt="Comment" class="media-img-auto media-img">
+                            </a>
+                            <div class="media-body">
+                                <a href= "{% url 'recipe:perfil' comentario.user.username %}"><h4 class="comment-title">{{ comentario.user.first_name }} {{ comentario.user.last_name }}</h4></a>
+                                <span class="post-date">{{ comentario.com_data }}</span>
+                                <p>{{ comentario.comentario }}</p>
+                                <ul class="item-rating">
+                                    <span class="rating-icon-wrap rating">
+                                        <div class="rating__overlay" style="width: {{comentario.classificacao.calcular_percentagem_estrelas}}% !important;">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                        </div>
+                                        <div class="rating__base">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                        </div>
+                                    </span>
+                                    <span>{{ comentario.classificacao.rating }} <span style="color: #e1e1e1">  /5</span></span>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                <br>
+
+                <!-- Paginação dos Comentários -->
+                {% if pagina.has_other_pages %}
+                <div class="container">
+                    <div class="row justify-content-md-center">
+                        <div class="col-lg-11">
+                            <div class="pagination-area d-sm-flex mt-1">
+                                <nav aria-label="Navegação de Páginas">
+                                    <ul class="pagination">
+
+                                        <!-- O 'Anterior' apenas fica disponível se houver página anterior-->
+                                        {% if pagina.has_previous %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?pagina={{ pagina.previous_page_number }}{% if request.GET.filtrar %}&filtrar={{ request.GET.filtrar }}{% endif %}#recipe-reviews"><i class="fa fa-angle-double-left" aria-hidden="true"></i>
+                                                    Anterior
+                                                </a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item">
+                                                <span class="page-link disabled-left"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Anterior</span>
+                                            </li>
+                                        {% endif %}
+
+                                        <!-- Paginação pelo nº da página -->
+                                        {% for numero_pagina in pagina.paginator.page_range %}
+                                            <!-- Mostrar apenas 'n' páginas antes e depois da página atual-->
+                                            {% if numero_pagina <= pagina.number|add:1 and numero_pagina >= pagina.number|add:-1 %}
+                                                {% if pagina.number == numero_pagina %}
+                                                    <li class="page-item active">
+                                                        <a class="page-link" href="?pagina={{ numero_pagina }}{% if request.GET.filtrar %}&filtrar={{ request.GET.filtrar }}{% endif %}#recipe-reviews">{{ numero_pagina}}</a>
+                                                    </li>
+                                                {% else %}
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="?pagina={{ numero_pagina }}{% if request.GET.filtrar %}&filtrar={{ request.GET.filtrar }}{% endif %}#recipe-reviews">{{ numero_pagina}}</a>
+                                                    </li>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        <!-- O 'Seguinte' apenas fica disponível se houver página seguinte-->
+                                        {% if pagina.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?pagina={{ pagina.next_page_number }}{% if request.GET.filtrar %}&filtrar={{ request.GET.filtrar }}{% endif %}#recipe-reviews">Próximo <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item">
+                                                <span class="page-link disabled-right">Próximo <i class="fa fa-angle-double-right" aria-hidden="true"></i></span>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                                <div class="page-status">
+                                    <p>Página <b> {{ pagina.number }}</b> de <b>{{ pagina.paginator.num_pages }}</b></p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <section id="adicionar-review">
+                {% if user.is_authenticated %}
+                <!-- Adicionar a Review (Apenas Utilizadores e Superusers) -->
+                <div class="leave-review">
+                    <div class="section-heading-reviews heading-dark">
+                        <h2 class="item-heading">DEIXE O SEU COMENTÁRIO</h2>
+                    </div>
+
+                    <div class="rate-wrapper">
+                        <div class="rate-label">Classificação: </div>
+                        <div class="rate">
+                            <div class="rate-item" {% for classificacao in classificacao_user %}{% if classificacao.rating >= 1 %}style="color:#f7b318;" {% endif %}{% if classificacao.rating < 1 %}style="color:#c9c9c9;" {% endif %}{% endfor %}><i class="fa fa-star" aria-hidden="true"></i></div>
+                            <div class="rate-item" {% for classificacao in classificacao_user %}{% if classificacao.rating >= 2 %}style="color:#f7b318;" {% endif %}{% if classificacao.rating < 2 %}style="color:#c9c9c9;" {% endif %}{% endfor %}><i class="fa fa-star" aria-hidden="true"></i></div>
+                            <div class="rate-item" {% for classificacao in classificacao_user %}{% if classificacao.rating >= 3 %}style="color:#f7b318;" {% endif %}{% if classificacao.rating < 3 %}style="color:#c9c9c9;" {% endif %}{% endfor %}><i class="fa fa-star" aria-hidden="true"></i></div>
+                            <div class="rate-item" {% for classificacao in classificacao_user %}{% if classificacao.rating >= 4 %}style="color:#f7b318;" {% endif %}{% if classificacao.rating < 4 %}style="color:#c9c9c9;" {% endif %}{% endfor %}><i class="fa fa-star" aria-hidden="true"></i></div>
+                            <div class="rate-item" {% for classificacao in classificacao_user %}{% if classificacao.rating >= 5 %}style="color:#f7b318;" {% endif %}{% if classificacao.rating < 5 %}style="color:#c9c9c9;" {% endif %}{% endfor %}><i class="fa fa-star" aria-hidden="true"></i></div>
+                        </div>
+                    </div>
+
+                    <p style="font-size: 12px; color: #bebebe; margin-top: -25px; margin-bottom: 30px">
+                        (<b>Nota:</b> Não poderá alterar a sua classificação!)
+                    </p>
+
+                    <script>
+                        // JS | Função para guardar as estrelas selecionadas
+                        $('.rate-wrapper').on('click', '.rate .rate-item', function () {
+                            var self = $(this),
+                                target = self.parent('.rate'),
+                                rating = self.index() + 1; // Adiciona 1 para obter a pontuação correta
+
+                            target.addClass('selected');
+                            target.find('.rate-item').removeClass('active');
+                            self.addClass('active');
+
+                            // Atualiza o valor do campo pontuação
+                            $('#rating').val(rating);
+                        });
+                    </script>
+
+                    <!-- Formulário da Review | #recipe-reviews para voltar à secção das Reviews -->
+                    <form action="{% url 'recipe:review' receita.titulo %}#recipe-reviews" method="post"
+                          class="leave-form-box" id="comentar-form">
+                        {% csrf_token %}
+
+                        <input type="hidden" name="classificacao" id="rating" value="0" required>
+
+                        <div class="row">
+                            <div class="col-12 form-group">
+                                <label>Comentário: </label>
+                                <textarea placeholder="(Opcional)"
+                                          class="textarea form-control" spellcheck="true"
+                                          name="comentario" rows="7" cols="20" id="comentario"></textarea>
+                            </div>
+                            <div class="col-12 form-group mb-0">
+                                <button type="submit" class="item-btn" id="comentar">COMENTAR</button>
+                            </div>
+                        </div>
+                        <div class="form-response"></div>
+                    </form>
+                </div>
+
+                    <!-- Mensagem de Confirmação de alteração de comentário -->
+                    {% for comentario in receita.comentario_set.all %}
+                        {% if request.user == comentario.user %}
+                            <script>
+                                // JS | Janela de Confirmação para confirmar a alteração do comentário.
+                                 $("#comentar").click(function(e) {
+                                    e.preventDefault(); // Impede o envio do formulário enquanto a confirmação estiver pendente.
+                                    const novoComentario = $("#comentario").val();
+                                    const antigoComentario = "{{ comentario.comentario }}";
+
+                                    // Verifique se o novo comentário tem mais de 1 caractere.
+                                    if (novoComentario.length > 0) {
+                                        const confirmMessage = `Confirma que pretende alterar o comentário de "${antigoComentario}" para "${novoComentario}"?`;
+
+                                        if (confirm(confirmMessage)) {
+                                            // Continua com o envio do formulário após a confirmação.
+                                            $("#comentar-form")[0].submit(); // Submeta o formulário.
+                                        } else {
+                                            // Regressa onde estava
+                                        }
+                                    } else {
+                                    }
+                                });
+                            </script>
+                        {% endif %}
+                    {% endfor %}
+
+
+                {% elif not user.is_authenticated %}
+                    <div class="leave-review">
+                        <div class="section-heading-reviews heading-dark">
+                            <h2 class="item-heading">DEIXE O SEU COMENTÁRIO</h2>
+                            <p class="item-heading-2"> Faça <b>Login</b> para poder deixar a sua <b>Opnião</b></p>
+                        </div>
+
+                        <!-- Formulário de Logion - #adicionar-review indica que a página será redirecionada para esta section-->
+                        <form action="{% url 'recipe:login' %}#adicionar-review" method="post" class="leave-form-box">
+                            {% csrf_token %}
+
+                            <input type="hidden" name="comment" value="{{ receita.titulo }}">
+
+                            <div class="form-box-login-comment">
+                                <div class="form-value">
+                                    <div class="inputbox-comment">
+                                        <ion-icon name="person-circle-outline"></ion-icon>
+                                        <input type="text" required name="username">
+                                        <label for="">Username</label>
+                                    </div>
+                                    <div class="mt-4 mb-4"></div>
+                                    <div class="inputbox-comment mb-2">
+                                        <ion-icon name="lock-closed-outline"></ion-icon>
+                                        <input type="password" required name="password">
+                                        <label for="">Password</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 form-group mt-5 mb-0">
+                                <button type="submit" class="item-btn">LOGIN</button>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+            </section>
+        </div>
+    </div>
+    </section>
+
+
+    {% endblock %}
+    {% block rodape %}{% endblock %}
+
+</body>
+</html>

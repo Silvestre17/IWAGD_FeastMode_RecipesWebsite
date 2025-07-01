@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+{% extends "recipe/base.html" %}
+{% block blocotopo %}
+
+{% load static %}
+
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Título do Separador -->
+    <title>Receitas  |  FEAST MODE</title>
+
+    <!-- AOS Library CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- AOS Library JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init();</script>
+
+    <!-- CSSs e JS Extra | Select2 4.0.6 -->
+    <link rel="stylesheet" href="{% static 'recipe/css/select2.min.css' %}">
+
+    <!-- Bootstrap js -->
+    <script src="{% static "recipe/js/bootstrap.min.js" %}"></script>
+    <!-- Popper js -->
+    <script src="{% static "recipe/js/popper.min.js" %}"></script>
+    <!-- Jquery js -->
+    <script src="{% static "recipe/js/code.jquery.com_jquery-3.7.1.min.js" %}"></script>
+
+    <script>
+    /*-------------------------------------
+    Select2 activation code
+    -------------------------------------*/
+    $(document).ready(function () {
+        if ($('select.select2').length) {
+            $('select.select2').select2({
+                theme: 'classic',
+                dropdownAutoWidth: true,
+                width: '100%'
+            });
+            $('.opening-hours-wrap select.select2').select2({
+                theme: 'classic',
+                width: '100%'
+            });
+        }
+    });
+    </script>
+
+    <script src="{% static "recipe/js/select2.full.min.js"%}"></script>
+
+</head>
+<body>
+
+    <!-- Preloader | Para carregar toda a página -->
+    <div id="preloader">
+        <div class="feast-mode-load"></div>
+    </div>
+
+    <script>
+        // JS | Desligar o '.preloader' quando a página estiver carregada
+        const $window = $(window);
+
+        $window.on('load', function () {
+            $('#preloader').fadeOut('slow', function () {
+                $(this).remove();
+            });
+        });
+    </script>
+
+    <!-- Topo da Página -->
+    <br><br>
+    <div class="breadcumb-area" style="background-image: url({% static "recipe/img/hero_banner_2.jpg" %});">
+        <div class="container h-100">
+            <div class="row h-100 align-items-center">
+                <div class="col-12">
+                    <div class="bradcumb-title text-center">
+                        <h2>Receitas</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receitas -->
+    <div class="container" style="margin-top: 100px; margin-bottom: 100px">
+
+        <div class="section-heading-reviews heading-dark" style="margin-bottom: 5rem">
+            <h1 class="item-heading" style="font-size: 30px;margin-bottom: -15px" data-aos="fade-right" data-aos-duration="800">LISTA DE RECEITAS</h1>
+            <p class="item-heading-2" style="font-size: 15px;" data-aos="fade-left" data-aos-duration="800"><b>{{ pagina.start_index }}-{{ pagina.end_index }}</b> de <b>{{ pagina.paginator.count }}</b></p>
+        </div>
+
+        {% if pagina.object_list.count > 0 %}
+
+        <!-- Filtros -->
+        <div class="row" data-aos="fade-up" data-aos-duration="800">
+            <div class="d-flex flex-wrap justify-content-center">
+                <!-- Barra de Pesquisa de Receita -->
+                <div class="adv-search-wrap">
+                    <div class="input-group">
+                        <form action="{% url 'recipe:receitas_filtros' categoria %}" method="get">
+
+                            <!-- Barra de Pesquisa -->
+                            <div class="col-sm">
+                                <input type="text" spellcheck="true" class="form-control"
+                                       placeholder="Pesquisa pelo Título da Receita..." name="pesquisa"/>
+                            </div>
+                            <!-- Filtrar por Grau de Dificuldade -->
+                            <div class="col-sm">
+                                <div class="filter-box">
+                                    <select class="select2" name="grau_dificuldade" >
+                                        <option value="None" {% if request.GET.grau_dificuldade == 'None' %}selected="selected"{% endif %}>Grau de Dificuldade</option>
+                                        <option value="Fácil" {% if request.GET.grau_dificuldade == 'Fácil' %}selected="selected"{% endif %}{% if grau_dificuldade == 'Fácil' %}selected="selected"{% endif %}>Fácil</option>
+                                        <option value="Médio" {% if request.GET.grau_dificuldade == 'Médio' %}selected="selected"{% endif %}{% if grau_dificuldade == 'Médio' %}selected="selected"{% endif %}>Médio</option>
+                                        <option value="Difícil" {% if request.GET.grau_dificuldade == 'Difícil' %}selected="selected"{% endif %}{% if grau_dificuldade == 'Difícil' %}selected="selected"{% endif %}>Difícil</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Filtros Gerais - Recentes | Melhor Classificadas | Mais Comentadas -->
+                            <div class="col-sm">
+                                <div class="filter-box">
+                                    <select class="select2" name="filtrar" >
+                                        <option value="-" {% if request.GET.filtrar == '-' %}selected="selected"{% endif %}>-</option>
+                                        <option value="Todas" {% if request.GET.filtrar == 'Todas' %}selected="selected"{% endif %}>Todas</option>
+                                        <option value="Recentes" {% if request.GET.filtrar == 'Recentes' %}selected="selected"{% endif %}>Recentes</option>
+                                        <option value="Classificadas" {% if request.GET.filtrar == 'Classificadas' %}selected="selected"{% endif %}>Melhor Classificadas</option>
+                                        <option value="Comentadas" {% if request.GET.filtrar == 'Comentadas' %}selected="selected"{% endif %}>Mais Comentadas</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Botão de Pesquisar -->
+                            <div class="btn-group">
+                                <div class="input-group-btn">
+                                    <button type="submit" class="btn-search"><i class="fa fa-search"></i></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+            <!-- Caso não haja Receitas para apresentar -->
+            <div class="container" style="margin-top: -30px">
+                <div class="row justify-content-md-center col-sm-12 col-lg-12 col-xl-12 col-xxl-12">
+
+                    <div class="no-recipe" style="margin-bottom: 20px">
+                        <a href="{% url 'recipe:receitas' %}" style="color: #bebebe;"><ion-icon name="albums"></ion-icon>  Ver Todas as Receitas</a>
+                    </div>
+
+                    <p class="no-comment"> <i>Ainda <b>não existem receitas</b> nesta categoria!</i></p>
+                    <p class="no-comment"><i>Ajude-nos a melhor o repositório de receitas e submeta as suas. <i class="fa fa-smile-o"></i></i></p>
+                    <a href="{% url 'recipe:adicionar_receita' %}" class="fill-btn" style="max-width: 12.5rem; margin: 20px auto;">
+                        <i class="fa fa-plus"></i>
+                        Submeter Receita
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+
+
+
+        <!-- Lista de Receitas -->
+        <div class="row justify-content-center" style="margin: 0 4rem;">
+            {% for receita in pagina.object_list %}
+                 <div class="coluna-receitas" data-aos="fade-up" data-aos-duration="800">
+
+                    <!-- Receitas -->
+                    <div class="welcome-recipe">
+
+                        <!-- Imagem -->
+                        <a href="{% url 'recipe:detalhe' receita.titulo %}"> <img src="{{receita.imagem.url}}" alt=""></a>
+
+                        <!-- Informações -->
+                        <div class="project_title">
+                            <div class="post-date-commnents d-flex">
+                                <a href="{% url 'recipe:detalhe' receita.titulo %}">{{receita.pub_data.date}}</a>
+                                <a href="{% url 'recipe:detalhe' receita.titulo %}">{{receita.numero_de_comentarios}} <i class="fa fa-commenting" aria-hidden="true"></i></a>
+                                <a href="{% url 'recipe:detalhe' receita.titulo %}">{{receita.media_avaliacoes}} <i class="fa fa-star" aria-hidden="true"></i></a>
+                            </div>
+
+                            <a href="{% url 'recipe:detalhe' receita.titulo %}">
+                                <h5>{{ receita.titulo }}</h5>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+
+    <!-- Paginação das Receitas -->
+    {% if pagina.has_other_pages %}
+    <div class="container">
+        <div class="row justify-content-md-center" style="margin: -40px 10px">
+            <div class="col-lg-10">
+                <div class="pagination-area d-sm-flex mt-1">
+                    <nav aria-label="Navegação de Páginas">
+                        <ul class="pagination">
+
+                            <!-- O 'Anterior' apenas fica disponível se houver página anterior-->
+                            {% if pagina.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?pagina={{ pagina.previous_page_number }}{% if request.GET.pesquisa %}&pesquisa={{ request.GET.pesquisa }}{% endif %}{% if request.GET.grau_dificuldade %}&grau_dificuldade={{ request.GET.grau_dificuldade }}{% endif %}{% if request.GET.filtrar %}&filtrar={{ request.GET.filtrar }}{% endif %}"><i class="fa fa-angle-double-left" aria-hidden="true"></i>
+                                        Anterior
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <span class="page-link disabled-left"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Anterior</span>
+                                </li>
+                            {% endif %}
+
+                            <!-- Paginação pelo nº da página -->
+                            {% for numero_pagina in pagina.paginator.page_range %}
+                                <!-- Mostrar apenas 'n' páginas antes e depois da página atual-->
+                                {% if numero_pagina <= pagina.number|add:2 and numero_pagina >= pagina.number|add:-2 %}
+                                    {% if pagina.number == numero_pagina %}
+                                        <li class="page-item active">
+                                            <a class="page-link" href="?pagina={{ numero_pagina }}{% if request.GET.pesquisa %}&pesquisa={{ request.GET.pesquisa }}{% endif %}{% if request.GET.grau_dificuldade %}&grau_dificuldade={{ request.GET.grau_dificuldade }}{% endif %}{% if request.GET.filtrar %}&filtrar={{ request.GET.filtrar }}{% endif %}">{{ numero_pagina}}</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?pagina={{ numero_pagina }}{% if request.GET.pesquisa %}&pesquisa={{ request.GET.pesquisa }}{% endif %}{% if request.GET.grau_dificuldade %}&grau_dificuldade={{ request.GET.grau_dificuldade }}{% endif %}{% if request.GET.filtrar %}&filtrar={{ request.GET.filtrar }}{% endif %}">{{ numero_pagina}}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+
+                            <!-- O 'Seguinte' apenas fica disponível se houver página seguinte-->
+                            {% if pagina.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?pagina={{ pagina.next_page_number }}{% if request.GET.pesquisa %}&pesquisa={{ request.GET.pesquisa }}{% endif %}{% if request.GET.grau_dificuldade %}&grau_dificuldade={{ request.GET.grau_dificuldade }}{% endif %}{% if request.GET.filtrar %}&filtrar={{ request.GET.filtrar }}{% endif %}">Próximo <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <span class="page-link disabled-right">Próximo <i class="fa fa-angle-double-right" aria-hidden="true"></i></span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    <div class="page-status">
+                        <p>Página <b> {{ pagina.number }}</b> de <b>{{ pagina.paginator.num_pages }}</b></p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <div style="padding: 100px 0"></div>
+
+    {% endblock %}
+    {% block rodape %}{% endblock %}
+
+
+
+    <!-- Bootstrap js -->
+    <script src="{% static "recipe/js/bootstrap.min.js" %}"></script>
+    <!-- Popper js -->
+    <script src="{% static "recipe/js/popper.min.js" %}"></script>
+    <!-- Jquery js -->
+    <script src="{% static "recipe/js/code.jquery.com_jquery-3.7.1.min.js" %}"></script>
+
+</body>
+</html>

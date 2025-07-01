@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+
+{% extends "recipe/base.html" %}
+{% block blocotopo %}
+
+{% load static %}
+
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Título do Separador -->
+    <title>Adicionar Receita</title>
+
+    <!-- CSSs Extra | Select2 4.0.6 -->
+    <link rel="stylesheet" href="{% static 'recipe/css/select2.min.css' %}">
+
+    <!-- Bootstrap js -->
+    <script src="{% static "recipe/js/bootstrap.min.js" %}"></script>
+    <!-- Popper js -->
+    <script src="{% static "recipe/js/popper.min.js" %}"></script>
+    <!-- Jquery js -->
+    <script src="{% static "recipe/js/code.jquery.com_jquery-3.7.1.min.js" %}"></script>
+
+    <script>
+    /*-------------------------------------
+    Select2 activation code
+    -------------------------------------*/
+    $(document).ready(function () {
+        if ($('select.select2').length) {
+            $('select.select2').select2({
+                theme: 'classic',
+                dropdownAutoWidth: true,
+                width: '100%'
+            });
+            $('.opening-hours-wrap select.select2').select2({
+                theme: 'classic',
+                width: '100%'
+            });
+        }
+    });
+    </script>
+
+    <!-- JS Extra | Select2 4.0.6 -->
+    <script src="{% static "recipe/js/select2.full.min.js"%}"></script>
+
+</head>
+<body>
+
+    <!-- Preloader | Para carregar toda a página -->
+    <div id="preloader">
+        <div class="feast-mode-load"></div>
+    </div>
+
+    <script>
+        // JS | Desligar o '.preloader' quando a página estiver carregada
+        const $window = $(window);
+
+        $window.on('load', function () {
+            $('#preloader').fadeOut('slow', function () {
+                $(this).remove();
+            });
+        });
+    </script>
+
+
+    <!-- Topo da Página -->
+    <br><br>
+    <div class="breadcumb-area" style="background-image: url({% static "recipe/img/hero_banner_3.jpg" %});">
+        <div class="container h-100">
+            <div class="row h-100 align-items-center">
+                <div class="col-12">
+                    <div class="bradcumb-title text-center">
+                        <h2>Editar Receita</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="breadcumb-nav">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8" style="margin: 0 auto;">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url "recipe:home" %}"><i class="fa fa-home" aria-hidden="true"></i>Home</a></li>
+                            <li><i class="fa fa-angle-right breadcrumb-item active" style="margin-left: 7px;margin-right: 7px;"></i></li>
+                            <li class="breadcrumb-item active" aria-current="page">Editar Receita | {{ receita }}</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulário para Submeter a Receita-->
+    <section class="submit-recipe-page-wrap" style="padding-top: 2.4rem; padding-bottom: 5rem;">
+    <div class="container">
+        <div class="row gutters-60">
+            <div class="col-lg-8" style="margin: 0 auto;">
+
+                <div class="section-heading-reviews heading-dark" style="margin-bottom: 5rem">
+                    <h1 class="item-heading" style="font-size: 30px;">RECEITA</h1>
+                </div>
+
+                <form class="submit-recipe-form" action="{% url 'recipe:editar_receita_view' receita.id %}"
+                      method="post" enctype="multipart/form-data" id="editar-form">
+
+                    {% csrf_token %}
+
+                    <!-- Título da Receita -->
+                    <div class="form-group">
+                        <label>Título da Receita</label>
+                        <input type="text" placeholder="Título da Receita" class="form-control" style="color: #bebebe"
+                               value="{{ receita.titulo }}" disabled>
+                    </div>
+
+                    <!-- Escolher a Categoria da Receita -->
+                    <div class="form-group">
+                        <label>Categoria da Receita</label>
+                        <select class="select2" name="categoria-receita">
+                            <option value="Entrada" {% if receita.categoria == 'Entrada' %}selected="selected"{% endif %}>Entrada</option>
+                            <option value="Salada" {% if receita.categoria == 'Salada' %}selected="selected"{% endif %}>Salada</option>
+                            <option value="Peixe" {% if receita.categoria == 'Peixe' %}selected="selected"{% endif %}>Peixe</option>
+                            <option value="Carne" {% if receita.categoria == 'Carne' %}selected="selected"{% endif %}>Carne</option>
+                            <option value="Vegetariano/Vegan" {% if receita.categoria == 'Vegetariano/Vegan' %}selected="selected"{% endif %}>Vegetariano/Vegan</option>
+                            <option value="Sobremesa" {% if receita.categoria == 'Sobremesa' %}selected="selected"{% endif %}>Sobremesa</option>
+                        </select>
+                    </div>
+
+
+                    <!-- Descrição da Receita -->
+                    <div class="form-group">
+                        <label>Modo de Preparação</label>
+                        <textarea placeholder="Modo de Preparação" id="modo-preparação" class="form-control"
+                                  style="font-size: 16px; text-align: justify ;margin-bottom: 20px" name="modo-preparação" rows="20" cols="20"
+                                  required spellcheck="true"
+                                  oninvalid="this.setCustomValidity('Modo de Preparação Obrigatório.')"
+                                  oninput="setCustomValidity('')">{{ receita.modo_prep }}</textarea>
+                    </div>
+
+
+                    <!-- Upload da Foto -->
+                    <div class="form-group">
+                        <label style="margin-top: 20px">Foto da Receita</label>
+                        <label class="submite-recipe-file-upload">
+                            <input type="file" name="foto-receita" accept="image/*" id="foto-receita"/>
+                            <ion-icon name="images"></ion-icon>
+                            Upload
+                        </label>
+                        <div class="filename">{{ receita.imagem.url }}</div>
+                        <p style="color:#bebebe;font-weight: 600;text-align: center; margin: 20px 0 auto">Preview da Foto:</p>
+                        <img id="preview" alt="" class="imagePreview" src="{{ receita.imagem.url }}">
+                    </div>
+
+                    <script>
+                        // JS | Selecionar o nome do arquivo e mostrar a imagem
+                        // Fonte: https://stackoverflow.com/questions/4459379/preview-an-image-before-it-is-uploaded
+                        $(function(){
+                            $("#foto-receita").change(function(event) {
+                                var x = event.target.files[0].name
+                                $(".filename").text(x);
+                                previewImage(); // Função para mostrar a imagem quando um arquivo for selecionado.
+                            });
+                        })
+
+                        function previewImage() {
+                            const file = document.getElementById("foto-receita").files;
+                            if (file.length > 0) {
+                                var fileReader = new FileReader();
+
+                                fileReader.onload = function (event) {
+                                    document.getElementById("preview").setAttribute("src", event.target.result);
+                                };
+                                fileReader.readAsDataURL(file[0]);
+                            }
+                        }
+
+                    </script>
+
+                    <div class="linha" style="margin: 50px 0"></div>
+
+                    <!-- Lista de Ingredientes -->
+                    <div class="additional-input-wrap">
+                        <label>Ingredientes:</label>
+
+                        {% for ingrediente in ingredientes %}
+                            <div class="row gutters-5">
+                                <div class="col-3_5">
+                                    <div class="form-group additional-input-box icon-left">
+                                        <i class="fa fa-caret-right"></i>
+                                        <input type="text" placeholder="Ingrediente" class="form-control"
+                                               name="ingrediente{{ forloop.counter }}" value="{{ ingrediente.ingrediente }}"
+                                               required oninvalid="this.setCustomValidity('Nome do Ingrediente Obrigatório.')"
+                                               oninput="setCustomValidity('')">
+                                    </div>
+                                </div>
+
+                                <div class="col-3" style="margin: 0 -20px">
+                                    <div class="form-group additional-input-box">
+                                        <input type="number" placeholder="Quantidade" class="form-control" required
+                                               name="unidade{{ forloop.counter }}" value="{{ ingrediente.unidade }}"
+                                               oninvalid="this.setCustomValidity('Quantidade do Ingrediente Obrigatória.')"
+                                               oninput="setCustomValidity('')">
+                                    </div>
+                                </div>
+                                <div class="col-2_5">
+                                    <div class="form-group additional-input-box">
+                                        <select class="select2 form-group" name="quantidade{{ forloop.counter }}">
+                                            <option value="Unidades" {% if ingrediente.quantidade == 'Unidades' %}selected="selected"{% endif %}>Unidades</option>
+                                            <option value="Kg" {% if ingrediente.quantidade == 'Kg' %}selected="selected"{% endif %} >Kg</option>
+                                            <option value="g" {% if ingrediente.quantidade == 'g' %}selected="selected"{% endif %}>g</option>
+                                            <option value="mL" {% if ingrediente.quantidade == 'mL' %}selected="selected"{% endif %}>mL</option>
+                                            <option value="L" {% if ingrediente.quantidade == 'L' %}selected="selected"{% endif %}>L</option>
+                                            <option value="q.b." {% if ingrediente.quantidade == 'q.b.' %}selected="selected"{% endif %}>q.b.</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-4" style="margin: 0 -20px">
+                                    <div class="form-group additional-input-box icon-right">
+                                        <input type="text" placeholder="Extra" class="form-control"
+                                               name="extra-ingrediente{{ forloop.counter }}" value="{{ ingrediente.extra_opcional }}">
+
+                                        <button type="button" style="border: 0;margin-left: 20px" onclick="removeIngredientForm()">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        <div id="ingredientFormsContainer">
+                            <!-- Aqui serão adicionados os formulários dinamicamente -->
+                        </div>
+
+                        <!-- Botão para adicionar mais Ingredientes -->
+                        <div class="container">
+                            <div class="row justify-content-end">
+                                <div class="col-2_5">
+                                    <button type="button" class="btn-add-ingrediente" onclick="addIngredientForm()">
+                                        <i class="fa fa-plus-circle"></i>Ingrediente
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <script>
+                            // JS | Adicionar e remover ingredientes dinamicamente
+                            // Fonte: https://www.w3schools.com/jsref/prop_html_innerhtml.asp
+                            var ingredientCounter = {{ ingredientes|length }};  // Inicialize o contador de ingredientes
+
+                            function addIngredientForm() {
+                                ingredientCounter++;
+
+                                var container = document.getElementById('ingredientFormsContainer');
+                                var newForm = document.createElement('div');
+                                newForm.className = 'row no-gutters';
+
+                                // Adicione os campos do novo formulário
+                                newForm.innerHTML = `
+                                    <div class="col-3_5">
+                                        <div class="form-group additional-input-box icon-left">
+                                            <i class="fa fa-caret-right"></i>
+                                            <input type="text" placeholder="Ingrediente" class="form-control" name="ingrediente${ingredientCounter}" required oninvalid="this.setCustomValidity('Nome do Ingrediente Obrigatório.')" oninput="setCustomValidity('')">
+                                        </div>
+                                    </div>
+                                    <div class="col-3" style="margin: 0 -20px">
+                                        <div class="form-group additional-input-box">
+                                            <input type="number" placeholder="Quantidade" class="form-control" name="unidade${ingredientCounter}" required oninvalid="this.setCustomValidity('Quantidade do Ingrediente Obrigatória.')" oninput="setCustomValidity('')">
+                                        </div>
+                                    </div>
+                                    <div class="col-2_5">
+                                        <div class="form-group additional-input-box">
+                                            <select class="select2 form-group" name="quantidade${ingredientCounter}">
+                                                <option value="Unidades">Unidades</option>
+                                                <option value="Kg">Kg</option>
+                                                <option value="g">g</option>
+                                                <option value="mL">mL</option>
+                                                <option value="L">L</option>
+                                                <option value="q.b.">q.b.</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-4" style="margin: 0 -20px">
+                                        <div class="form-group additional-input-box icon-right">
+                                            <input type="text" placeholder="Extra" class="form-control" name="extra-ingrediente${ingredientCounter}">
+                                            <button type="button" style="border: 0;margin-left: 20px" onclick="removeIngredientForm(${ingredientCounter})">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                `;
+
+                                container.appendChild(newForm);
+
+                                // Inicialize o Select2 no novo elemento
+                                $('select.select2').select2({
+                                    theme: 'classic',
+                                    width: '100%'
+                                });
+                            }
+
+                            function removeIngredientForm(ingredientIndex) {
+                                var container = document.getElementById('ingredientFormsContainer');
+                                var formToRemove = document.querySelector(`[name^="ingrediente${ingredientIndex}"]`);
+
+                                if (formToRemove) {
+                                    container.removeChild(formToRemove.closest('.row'));
+                                }
+                            }
+                        </script>
+                    </div>
+
+                    <div class="linha"></div>
+
+                    <!-- Infomações Adicionais | Grau de Dificuldade, Calorias, Tempo de Preparação e Doses -->
+                    <div class="additional-input-wrap">
+                        <label style="margin-top: 20px;">Infomações Adicionais:</label>
+
+                        <div class="row gutters-5">
+                            <div class="col-6">
+                                <div class="form-group additional-input-box icon-left">
+                                    <i class="fa fa-tags"></i>
+                                    <select class="select2 form-group" name="grau_dificuldade">
+                                        <option disabled>Grau de Dificuldade</option>
+                                        <option value="Fácil" {% if receita.grau_dificuldade == 'Fácil' %}selected="selected"{% endif %}>Fácil</option>
+                                        <option value="Médio" {% if receita.grau_dificuldade == 'Médio' %}selected="selected"{% endif %}>Médio</option>
+                                        <option value="Difícil" {% if receita.grau_dificuldade == 'Difícil' %}selected="selected"{% endif %}>Difícil</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group additional-input-box icon-left">
+                                    <i class="fa fa-calculator"></i>
+                                    <input type="number" placeholder="Calorias | XXX kcal" class="form-control" required
+                                           name="calorias" id="calorias" value="{{ receita.calorias }}"
+                                           oninvalid="this.setCustomValidity('Calorias Obrigatórias.')"
+                                           oninput="setCustomValidity('')">
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <div class="form-group additional-input-box icon-left">
+                                    <i class="fa fa-clock-o"></i>
+                                    <input type="number" placeholder="Tempo Prep (min.)" class="form-control" required
+                                           name="tempo-preparacao" id="tempo-preparacao" value="{{ receita.tempo_prep }}"
+                                           oninvalid="this.setCustomValidity('Tempo de Preparação Obrigatórias.')"
+                                           oninput="setCustomValidity('')">
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <div class="form-group additional-input-box icon-left">
+                                    <i class="fa fa-user-circle"></i>
+                                    <input type="number" placeholder="Doses (Nº de Pessoas)" class="form-control" required
+                                           name="doses" id="doses" value="{{ receita.doses }}"
+                                           oninvalid="this.setCustomValidity('Doses Obrigatórias.')"
+                                           oninput="setCustomValidity('')">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="editar" onclick="validateForm()">
+                        <i class="fa fa-edit" style="margin-right: 10px"></i>Editar Receita</button>
+                </form>
+
+                <script>
+                    // JS | Janela de Confirmação para confirmar a edição da receita.
+                    $("#editar").click(function(e) {
+                        e.preventDefault(); // Impede o envio do formulário enquanto a confirmação estiver pendente.
+
+                    // Verifique se o novo comentário tem mais de 1 caractere.
+                    const confirmMessage = `Confirma que pretende alterar o perfil?`;
+
+                    if (confirm(confirmMessage)) {
+                        // Continua com o envio do formulário após a confirmação.
+                        $("#editar-form")[0].submit(); // Submeta o formulário.
+                        } else {
+                            // Regressa onde estava
+                        }
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+    </section>
+
+        <script>
+            // JS para verificar se todos os campos estão preenchidos (Caso Contrário, lança uma mensagem no browser)
+            function validateForm() {
+              var titulo = document.getElementById("titulo-receita").value;
+              var foto = document.getElementById("foto-receita").value;
+              var descricao = document.getElementById("modo-preparação").value;
+              var calorias = document.getElementById("calorias").value;
+              var preparacao = document.getElementById("tempo-preparacao").value;
+
+              var errorMessages = [];
+
+              if (titulo === "") {
+                errorMessages.push("O Título é obrigatório.");
+              }
+
+              if (foto === "") {
+                errorMessages.push("O Foto é obrigatório.");
+              }
+
+              if (descricao === "") {
+                errorMessages.push("O Modo de Preparação é obrigatório.");
+              }
+
+              if (calorias === "") {
+                errorMessages.push("O Calorias é obrigatório.");
+              }
+
+              if (preparacao === "") {
+                errorMessages.push("O Tempo de Preparação é obrigatório.");
+              }
+
+              if (errorMessages.length > 0) {
+                // Exibe mensagens de erro em uma caixa de diálogo no navegador
+                window.alert(errorMessages.join("\n"));
+                return false; // Impede o envio do formulário
+              }
+
+              return true; // Permite o envio do formulário se todos os campos estiverem preenchidos
+            }
+        </script>
+
+
+
+    {% endblock %}
+    {% block rodape %}{% endblock %}
+
+
+</body>
+</html>

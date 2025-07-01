@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% load static %}
+
+<!-- Para usar o Bootstrap5 (pip install django-bootstrap-v5)-->
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'recipe/img/Logo_Icon.png' %}">
+
+    <!-- Ficheiros CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'recipe/style.css' %}" />
+
+    <!-- Bibliotecas de Icons-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+    <!-- Bootstrap js -->
+    <script src="{% static "recipe/js/bootstrap.min.js" %}"></script>
+    <!-- Popper js -->
+    <script src="{% static "recipe/js/popper.min.js" %}"></script>
+    <!-- Jquery js -->
+    <script src="{% static "recipe/js/code.jquery.com_jquery-3.7.1.min.js" %}"></script>
+
+    <!-- AOS Library CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- AOS Library JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init();</script>
+</head>
+
+<body>
+
+    <!-- Botão para regressar ao ínicio da página -->
+    <button onclick="topFunction()" id="myBtn" class="animated fadeInDown" title="Regressa ao Ínicio da Página"></button>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.6.0/mdb.min.js"></script>
+
+    <!-- Mensagens de Erro/Aviso/Sucesso -->
+    {% if messages %}
+        {% for message in messages %}
+            <dialog open class="dialog dialog-{{message.tags}}">
+                <div class="dialog-content {{ message.tags }}">
+                    <h2 class="dialog-text {{ message.tags }}" style="text-transform: capitalize;">{{ message.tags }}</h2>
+                    <p class="dialog-text">{{ message }}</p>
+                </div>
+                <button class="dialog-close"></button>
+            </dialog>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Barra de Navegação -->
+    <nav class="navbar navbar-expand-lg bg-transparent navbar-dark" style="margin-right: 3rem;">
+        <div class="container-fluid">
+            <ul class="navbar-nav ms-auto d-flex flex-row">
+
+                {% if not user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-black" id="navbarDropdown"
+                       role="button" data-mdb-toggle="dropdown" aria-expanded="false" style="text-transform: capitalize">
+                        <i class="fa fa-user-circle-o mx-1" style="color: var(--yellow)"></i> Iniciar Sessão</a>
+
+                    <!-- Dropdown Menu -->
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'recipe:login_page' %}">Login</a></li>
+                        <li><a class="dropdown-item" href="{% url 'recipe:registar_page' %}">Registar</a></li>
+
+                    </ul>
+                </li>
+
+                {% elif user.is_authenticated %}
+                <li>
+                    <a href="{% url 'recipe:adicionar_receita' %}" class="fill-btn"><i class="fa fa-plus"></i>Submeter Receita</a>
+                </li>
+
+                <li class="nav-item dropdown" style="margin-top: 0.4rem;">
+
+                    <a class="nav-link dropdown-toggle text-black" href="#" id="navbarDropdown"
+                       role="button" data-mdb-toggle="dropdown" aria-expanded="false" style="text-transform: capitalize;">
+                        <i class="fa fa-user mx-1" style="color: var(--yellow)"></i> Olá {{ request.user.first_name }}!
+                    </a>
+
+                    <!-- Dropdown Menu -->
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li style="text-transform: capitalize"><a class="dropdown-item" href= "{% url 'recipe:perfil' request.user.username %}" >A Minha Conta</a></li>
+                        <li style="text-transform: capitalize"><a class="dropdown-item" href= "{% url 'recipe:logout' %}" ><i class="fa fa-sign-out" aria-hidden="true"></i>Sair</a></li>
+                    </ul>
+                </li>
+                {% endif %}
+
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Logo do Site -->
+    <div class="container">
+        <div class="row">
+            <div class="logo_area text-center">
+                <a href="{% url 'recipe:home' %}" class="site-logo">
+                    <img src="{% static "recipe/img/Logo.png" %}" alt="" class="logo-img">
+                    <span class="logo-text">FEAST MODE</span>
+                    <span class="small-text">Saboroso, Saudável e Simples</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu de Navegação -->
+    <div class="col-12">
+        <nav class="navbar navbar-expand-lg sticky">
+            <div class="collapse navbar-collapse justify-content-center" id="site-nav">
+                <ul class="navbar-nav" id="site-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'recipe:home' %}"> <i class="fa fa-home"></i> Página Inicial</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href={% url 'recipe:receitas' %}#">Receitas</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-mdb-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Categorias</a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{% url 'recipe:mudar_categoria' categoria='Entrada' %}">Entrada</a>
+                            <a class="dropdown-item" href="{% url 'recipe:mudar_categoria' categoria='Salada' %}">Salada</a>
+                            <a class="dropdown-item" href="{% url 'recipe:mudar_categoria' categoria='Peixe' %}">Peixe</a>
+                            <a class="dropdown-item" href="{% url 'recipe:mudar_categoria' categoria='Carne' %}">Carne</a>
+                            <a class="dropdown-item" href="{% url 'recipe:mudar_categoria' categoria='Vegetariano' %}">Vegetariano/Vegan</a>
+                            <a class="dropdown-item" href="{% url 'recipe:mudar_categoria' categoria='Sobremesa' %}">Sobremesa</a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'recipe:contactos' %}">Contactos</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+
+    {% block blocotopo %}
+    {% endblock %}
+
+    <!-- Rodapé do Site-->
+    <footer class="footer_area">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="footer-content">
+                        <!-- Logo Area Start -->
+                        <div class="footer-logo-area text-center">
+                            <a href="{% url 'recipe:home' %}" class="site-logo">FEAST MODE</a>
+                        </div>
+                        <div class="footer-social-area d-flex">
+                            <div class="single-icon">
+                                <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i><span>FACEBOOK</span></a>
+                            </div>
+                            <div class="single-icon">
+                                <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i><span>TWITTER</span></a>
+                            </div>
+                            <div class="single-icon">
+                                <a href="#"><i class="fa fa-instagram" aria-hidden="true"></i><span>INSTAGRAM</span></a>
+                            </div>
+                            <div class="single-icon">
+                                <a href="#"><i class="fa fa-youtube-play" aria-hidden="true"></i><span>YOUTUBE</span></a>
+                            </div>
+                        </div>
+                        <div class="copy_right_text text-center">
+                            <p> @ Outubro 2023 | Trabalho realizado por:
+                                <span style="margin-right: 2px;margin-left: 2px">André Silvestre Nº104532 </span>|
+                                <span style="margin-right: 2px;margin-left: 2px">Margarida Pereira Nº105877 </span> |
+                                <span style="margin-right: 2px;margin-left: 2px">Umeima Mahomed Nº 99239 </span>
+                                <i class="fa fa-smile-o"></i>
+                            </p>
+                        </div>
+                        <div class="text-center termos-condições">
+                            <p>
+                                <a href="{% static 'recipe/TermosCondicoes_FeastMode.pdf' %}"><b>Termos e Condições</b></a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    {% block rodape %}
+    {% endblock %}
+
+
+    <script>
+        // JS | Botão de Regressar ao Início da Página
+        // Fonte: https://stackoverflow.com/questions/70040193/how-to-make-scroll-to-top-js-function-go-slower-in-jquery
+
+        // Obter o elemento do botão
+        const mybutton = document.getElementById("myBtn");
+
+        // Mostrar o botão quando navega 50px para baixo
+        window.onscroll = function() {scrollFunction()};
+        function scrollFunction() {
+          if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
+            mybutton.style.display = "block";
+          } else {
+            mybutton.style.display = "none";
+          }}
+
+        // Regressa ao topo de forma suave
+        document.body.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        document.documentElement.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+
+        // Regressa ao topo quando clica no Botão
+        function topFunction() {
+          document.body.scrollTop = 0;
+          document.documentElement.scrollTop = 0;
+        }
+    </script>
+
+    <script>
+        // JS | Mensagens de Erro/Aviso/Sucesso
+
+        // Fecha a caixa de diálogo quando se carrega nela
+        $('.dialog').click(function() {
+            $(this).fadeOut();
+        });
+
+        // Fecha a caixa de diálogo passado 8 segundos
+        setTimeout(function() {
+            $('.dialog').fadeOut();
+        }, 8000);
+
+        // Fecha a caixa de diálogo quando o botão de fechar é clicado
+        $('.dialog-close').click(function() {
+            $('.dialog').fadeOut();
+        });
+    </script>
+
+</body>
+</html>

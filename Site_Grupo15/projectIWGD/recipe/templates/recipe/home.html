@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+
+{% extends "recipe/base.html" %}
+{% block blocotopo %}
+
+{% load static %}
+
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Título do Separador -->
+    <title>Página Incial  |  FEAST MODE</title>
+
+    <!-- AOS Library CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- AOS Library JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init();</script>
+
+</head>
+<body>
+
+    {% if not messages %}
+    <!-- Preloader | Só aparece se não houver mensagem de aviso -->
+    <div class="preloader d-flex align-items-center justify-content-center">
+        <div class="preloader-content">
+        <div id="h3-preloader">A cozinhar...</div>
+            <div id="cooking">
+                <div class="bubble"></div>
+                <div class="bubble"></div>
+                <div class="bubble"></div>
+                <div class="bubble"></div>
+                <div class="bubble"></div>
+                <div id="area">
+                    <div id="sides">
+                        <div id="pan"></div>
+                        <div id="handle"></div>
+                    </div>
+                    <div id="pancake">
+                        <div id="pastry"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <script>
+      // Parar a animação
+      const preloader = document.querySelector('.preloader');
+        // Adicionar um tempo de espera de 2500 milisegundos
+        setTimeout(() => {
+        preloader.parentNode.removeChild(preloader)
+        }, 2500);
+    </script>
+
+    <!-- Banner Animado -->
+    <!-- Hero Image | Fonte: https://stackoverflow.com/questions/67412912/css-text-sliding-animation -->
+    <div class="p-5 text-center bg-image">
+        <div class="bg-image-pseudo"></div>
+        <div class="body-banner">
+            <h2 class="title-banner">Receitas
+                <span class="slider">
+                    <span class="words">
+                      <span>Saborosas</span>
+                      <span>Simples</span>
+                      <span>Saudáveis</span>
+                    </span>
+              </span>
+            </h2>
+        </div>
+    </div>
+
+    <!-- Receitas Mais Votadas -->
+    <div class="container" style="margin-top: 100px; margin-bottom: 100px" >
+
+        <div class="section-heading-reviews heading-dark" style="margin-bottom: 5rem">
+            <h1 class="item-heading" style="font-size: 30px; margin-bottom: -20px" data-aos="fade-right" data-aos-duration="800">RECEITAS MAIS VOTADAS</h1>
+            <p class="item-heading-2" style="font-size: 20px;" data-aos="fade-left" data-aos-duration="800">TOP 6</p>
+        </div>
+
+        <div class="row justify-content-center" style="margin: 0 4rem;">
+            {% for receita in top6_receitas %}
+                 <div class="coluna-receitas" data-aos="fade-up" data-aos-duration="800">
+
+                    <!-- Receitas -->
+                    <div class="welcome-recipe image-home">
+
+                        <!-- Imagem -->
+                        <a href="{% url 'recipe:detalhe' receita.titulo %}">
+                            <img src="{{receita.imagem.url}}" alt="">
+                        </a>
+
+                        <!-- Informações -->
+                        <div class="project_title">
+                            <div class="post-date-commnents d-flex">
+                                <a href="{% url 'recipe:detalhe' receita.titulo %}">{{receita.pub_data.date}}</a>
+                                <a href="{% url 'recipe:detalhe' receita.titulo %}">{{receita.numero_de_comentarios}} <i class="fa fa-commenting" aria-hidden="true"></i></a>
+                                <a href="{% url 'recipe:detalhe' receita.titulo %}">{{receita.media_avaliacoes}} <i class="fa fa-star" aria-hidden="true"></i></a>
+                            </div>
+                            <a href= "{% url 'recipe:detalhe' receita.titulo %}">
+                                <h5>{{ receita.titulo }}</h5>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Botão para ver mais Receitas -->
+    <div class="container" style="margin-top: -60px" data-aos="zoom-in" data-aos-duration="800">
+        <div class="row justify-content-md-center row-cols-sm-2 row-cols-lg-4 row-cols-xl-3" >
+            <a href="{% url 'recipe:receitas' %}" class="fill-btn-home">
+                <ion-icon name="flame"></ion-icon>Descubra Mais Receitas<ion-icon name="flame"></ion-icon>
+            </a>
+        </div>
+    </div>
+
+    <div style="padding: 75px 0"></div>
+
+    {% endblock %}
+    {% block rodape %}{% endblock %}
+
+
+
+    <!-- Bootstrap js -->
+    <script src="{% static "recipe/js/bootstrap.min.js" %}"></script>
+    <!-- Popper js -->
+    <script src="{% static "recipe/js/popper.min.js" %}"></script>
+    <!-- Jquery js -->
+    <script src="{% static "recipe/js/code.jquery.com_jquery-3.7.1.min.js" %}"></script>
+
+</body>
+</html>
